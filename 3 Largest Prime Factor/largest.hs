@@ -3,21 +3,26 @@ divisible x y
     | ((x `rem` y) == 0)    = True
     | otherwise             = False
 
+-- List of all primes
 primes :: [Int]
 primes = sieve [2..]
     where 
         sieve (p:xs) = p : sieve [x | x <- xs, not $ divisible x p]
 
--- Finds the prime factors of a, over the given search space of prime numbers
--- Needs to be supplied this list of primes
-primeFactors :: Int -> [Int] -> [Int]
-primeFactors 1 _ = []
-primeFactors a (p:ps)
-    | divisible a p     = p : (primeFactors (a `div` p) ps)
-    | otherwise         = primeFactors a ps
+-- Internal recursive implementation of prime factor finding
+primeFactorsImpl :: Int -> [Int] -> [Int]
+primeFactorsImpl 1 _ = []
+primeFactorsImpl a (p:ps)
+    | divisible a p     = p : (primeFactorsImpl (a `div` p) ps)
+    | otherwise         = primeFactorsImpl a ps
 
+-- Finds the prime factors of x
+primeFactors:: Int -> [Int]
+primeFactors x = primeFactorsImpl x primes
+
+-- Finds the largest prime number of x
 largestPrimeFactor :: Int -> Int
-largestPrimeFactor x = maximum (primeFactors x primes)
+largestPrimeFactor x = maximum (primeFactors x)
 
 main = do
     print $ largestPrimeFactor 600851475143
